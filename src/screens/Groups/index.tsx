@@ -1,12 +1,15 @@
 import { useState } from 'react'
 import { FlatList } from 'react-native'
+// Components
 import { Header } from '@components/Header'
 import { Highlight } from '@components/Highlight'
 import { TeamCard } from '@components/Card/TeamCard'
+import { ListEmpty } from '@components/ListEmpty'
+// End Components
 import { Container } from './styles'
 
 const Groups = () => {
-  const [groups, setGroups] = useState<string[]>(['Team A', 'Team B', 'Team C'])
+  const [groups, setGroups] = useState<string[]>([])
   return (
     <Container>
       <Header />
@@ -18,6 +21,10 @@ const Groups = () => {
         renderItem={({ item }) => {
           return <TeamCard title={item} />
         }}
+        contentContainerStyle={groups.length === 0 && { flex: 1 }}
+        ListEmptyComponent={() => (
+          <ListEmpty message={'Nenhum team adicionado'} />
+        )}
       />
     </Container>
   )

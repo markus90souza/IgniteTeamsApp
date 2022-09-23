@@ -7,9 +7,15 @@ import { TeamCard } from '@components/Card/TeamCard'
 import { ListEmpty } from '@components/ListEmpty'
 // End Components
 import { Container } from './styles'
+import { Button } from '@components/Button'
 
 const Groups = () => {
-  const [groups, setGroups] = useState<string[]>([])
+  const [groups, setGroups] = useState<string[]>([
+    'Team A',
+    'Team B',
+    'Team C',
+    'Team A',
+  ])
   return (
     <Container>
       <Header />
@@ -26,6 +32,8 @@ const Groups = () => {
           <ListEmpty message={'Nenhum team adicionado'} />
         )}
       />
+
+      <Button title="Criar nova turma" />
     </Container>
   )
 }

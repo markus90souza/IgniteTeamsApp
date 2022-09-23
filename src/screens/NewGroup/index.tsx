@@ -1,12 +1,11 @@
 import { Button } from '@components/Button'
 import { Header } from '@components/Header'
 import { Highlight } from '@components/Highlight'
+import { Input } from '@components/Input'
 
 import { Container, Wrapper, Icon } from './styles'
 
-type NweGroupProps = {}
-
-export function NewGroup({}: NweGroupProps) {
+const NewGroup = () => {
   return (
     <Container>
       <Header showBackButton />
@@ -17,8 +16,12 @@ export function NewGroup({}: NweGroupProps) {
           subTitle="crie uma turma para adicionar pessoas"
         />
 
-        <Button title={'Criar'} />
+        <Input placeholder={'Cadastrar nova turma'} />
+
+        <Button title={'Criar'} style={{ marginTop: 20 }} />
       </Wrapper>
     </Container>
   )
 }
+
+export { NewGroup }

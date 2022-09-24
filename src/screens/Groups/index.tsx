@@ -5,17 +5,12 @@ import { Header } from '@components/Header'
 import { Highlight } from '@components/Highlight'
 import { TeamCard } from '@components/Card/TeamCard'
 import { ListEmpty } from '@components/ListEmpty'
+import { Button } from '@components/Button'
 // End Components
 import { Container } from './styles'
-import { Button } from '@components/Button'
 
 const Groups = () => {
-  const [groups, setGroups] = useState<string[]>([
-    'Team A',
-    'Team B',
-    'Team C',
-    'Team A',
-  ])
+  const [groups, setGroups] = useState<string[]>([])
   return (
     <Container>
       <Header />

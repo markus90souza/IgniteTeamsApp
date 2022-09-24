@@ -6,7 +6,7 @@ import { Roboto_400Regular, Roboto_700Bold } from '@expo-google-fonts/roboto'
 import theme from '@theme/index'
 import { Loading } from '@components/Loading'
 
-import { NewGroup } from '@screens/NewGroup'
+import { Players } from '@screens/Players'
 
 const App = () => {
   const [fontsLoaded] = useFonts({
@@ -21,7 +21,7 @@ const App = () => {
         barStyle={'light-content'}
         backgroundColor={'transparent'}
       />
-      {fontsLoaded ? <NewGroup /> : <Loading />}
+      {fontsLoaded ? <Players /> : <Loading />}
     </ThemeProvider>
   )
 }

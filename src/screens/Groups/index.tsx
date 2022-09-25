@@ -8,9 +8,16 @@ import { ListEmpty } from '@components/ListEmpty'
 import { Button } from '@components/Button'
 // End Components
 import { Container } from './styles'
+import { useNavigation } from '@react-navigation/native'
 
 const Groups = () => {
+  const { navigate } = useNavigation()
   const [groups, setGroups] = useState<string[]>([])
+
+  const handleAddNewGroup = () => {
+    navigate('new')
+  }
+
   return (
     <Container>
       <Header />
@@ -28,7 +35,7 @@ const Groups = () => {
         )}
       />
 
-      <Button title="Criar nova turma" />
+      <Button title="Criar nova turma" onPress={handleAddNewGroup} />
     </Container>
   )
 }

@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { FlatList } from 'react-native'
+import { useNavigation, useFocusEffect } from '@react-navigation/native'
 // Components
 import { Header } from '@components/Header'
 import { Highlight } from '@components/Highlight'
@@ -8,15 +9,26 @@ import { ListEmpty } from '@components/ListEmpty'
 import { Button } from '@components/Button'
 // End Components
 import { Container } from './styles'
-import { useNavigation } from '@react-navigation/native'
+import { getAllGroups } from '@storage/group'
 
 const Groups = () => {
   const { navigate } = useNavigation()
-  const [groups, setGroups] = useState<string[]>([])
+  const [groups, setGroups] = useState<string[] | null>([])
 
   const handleAddNewGroup = () => {
     navigate('new')
   }
+
+  const getGroups = async () => {
+    const data = await getAllGroups()
+    setGroups(data)
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      getGroups()
+    }, []),
+  )
 
   return (
     <Container>
@@ -29,7 +41,7 @@ const Groups = () => {
         renderItem={({ item }) => {
           return <TeamCard title={item} />
         }}
-        contentContainerStyle={groups.length === 0 && { flex: 1 }}
+        contentContainerStyle={groups?.length === 0 && { flex: 1 }}
         ListEmptyComponent={() => (
           <ListEmpty message={'Nenhum team adicionado'} />
         )}

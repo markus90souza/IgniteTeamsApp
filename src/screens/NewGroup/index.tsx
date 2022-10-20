@@ -7,16 +7,32 @@ import { Highlight } from '@components/Highlight'
 import { Input } from '@components/Input'
 // End components
 import { Container, Wrapper, Icon } from './styles'
+import { createGroup } from '@storage/group'
+import { AppError } from '@utils/AppError'
+import { Alert } from 'react-native'
 
 const NewGroup = () => {
   const [group, setGroup] = useState('')
 
   const { navigate } = useNavigation()
 
-  const handleCreateGroup = () => {
-    navigate('players', {
-      group,
-    })
+  const handleCreateGroup = async () => {
+    try {
+      if (group.trim().length === 0) {
+        return Alert.alert('Novo grupo', 'Informe o nome do grupo!')
+      }
+      await createGroup(group)
+      navigate('players', {
+        group,
+      })
+    } catch (error) {
+      if (error instanceof AppError) {
+        Alert.alert('Novo grupo', error.message)
+      } else {
+        Alert.alert('Novo grupo', 'Não foi possivel criar um novo grupo')
+        console.log(error)
+      }
+    }
   }
 
   return (

@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
-import { useState } from 'react'
-import { FlatList } from 'react-native'
+import { useEffect, useState, useRef } from 'react'
+import { Alert, FlatList } from 'react-native'
 import { useRoute } from '@react-navigation/native'
 
 import { Button } from '@components/Button'
@@ -13,16 +13,62 @@ import { PlayerCard } from '@components/Card/PlayerCard'
 import { ListEmpty } from '@components/ListEmpty'
 
 import { Container, Form, HeaderPlayerList, NumberOfPlayers } from './styles'
+import {
+  AddPlayersByGroup,
+  getPlayersByGroup,
+  getPlayersByGroupAndTeam,
+} from '@storage/players'
+import { AppError } from '@utils/AppError'
+import { PlayerStorageDTO } from '@storage/players/PlayerStorageDTO'
 
 type RouteParams = {
   group: string
 }
 
 const Players = () => {
+  const [newPlayer, setNewPlayer] = useState('')
   const [team, setTeam] = useState('Team A')
-  const [players, setPlayers] = useState([])
+  const [players, setPlayers] = useState<PlayerStorageDTO[]>([])
   const { params } = useRoute()
   const { group } = params as RouteParams
+
+  const handleAddPlayer = async () => {
+    if (newPlayer.trim().length === 0) {
+      return Alert.alert(
+        'Nova pessoa',
+        'Informe o nome do usuãrio a ser adicionado!',
+      )
+    }
+
+    const playerInTeam = {
+      name: newPlayer,
+      team,
+    }
+
+    try {
+      await AddPlayersByGroup(playerInTeam, group)
+      fetchPlayerByTeam()
+      setNewPlayer('')
+    } catch (error) {
+      if (error instanceof AppError) {
+        Alert.alert('Nova Pessoa', error.message)
+      } else {
+        console.log(error)
+        Alert.alert('Nova Pessoa', 'Não foi possivel Adicionar')
+      }
+    }
+  }
+
+  const fetchPlayerByTeam = async () => {
+    try {
+      const playersByTeam = await getPlayersByGroupAndTeam(group, team)
+      setPlayers(playersByTeam)
+    } catch (error) {}
+  }
+
+  useEffect(() => {
+    fetchPlayerByTeam()
+  }, [team])
 
   return (
     <Container>
@@ -30,8 +76,13 @@ const Players = () => {
 
       <Highlight title={group} subTitle="adicione a galera e separe os times" />
       <Form>
-        <Input placeholder="Nome do participante" autoCorrect={false} />
-        <ButtonIcon icon="add" />
+        <Input
+          placeholder="Nome do participante"
+          autoCorrect={false}
+          onChangeText={setNewPlayer}
+          value={newPlayer}
+        />
+        <ButtonIcon icon="add" onPress={handleAddPlayer} />
       </Form>
 
       <HeaderPlayerList>
@@ -52,9 +103,9 @@ const Players = () => {
 
       <FlatList
         data={players}
-        keyExtractor={(i) => i}
+        keyExtractor={(i) => i.name}
         renderItem={({ item }) => (
-          <PlayerCard name={item} onRemove={() => {}} />
+          <PlayerCard name={item.name} onRemove={() => {}} />
         )}
         ListEmptyComponent={() => {
           return <ListEmpty message="Não há nenhum jogar" />

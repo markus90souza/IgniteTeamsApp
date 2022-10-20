@@ -24,6 +24,12 @@ const Groups = () => {
     setGroups(data)
   }
 
+  const handleOpenPlayer = (group: string) => {
+    navigate('players', {
+      group,
+    })
+  }
+
   useFocusEffect(
     useCallback(() => {
       getGroups()
@@ -39,7 +45,9 @@ const Groups = () => {
         data={groups}
         keyExtractor={(item) => item}
         renderItem={({ item }) => {
-          return <TeamCard title={item} />
+          return (
+            <TeamCard title={item} onPress={() => handleOpenPlayer(item)} />
+          )
         }}
         contentContainerStyle={groups?.length === 0 && { flex: 1 }}
         ListEmptyComponent={() => (

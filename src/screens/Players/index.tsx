@@ -1,6 +1,5 @@
-/* eslint-disable no-unused-vars */
 import { useEffect, useState, useRef } from 'react'
-import { Alert, FlatList } from 'react-native'
+import { Alert, FlatList, TextInput, Keyboard } from 'react-native'
 import { useRoute } from '@react-navigation/native'
 
 import { Button } from '@components/Button'
@@ -13,11 +12,7 @@ import { PlayerCard } from '@components/Card/PlayerCard'
 import { ListEmpty } from '@components/ListEmpty'
 
 import { Container, Form, HeaderPlayerList, NumberOfPlayers } from './styles'
-import {
-  AddPlayersByGroup,
-  getPlayersByGroup,
-  getPlayersByGroupAndTeam,
-} from '@storage/players'
+import { AddPlayersByGroup, getPlayersByGroupAndTeam } from '@storage/players'
 import { AppError } from '@utils/AppError'
 import { PlayerStorageDTO } from '@storage/players/PlayerStorageDTO'
 
@@ -31,6 +26,8 @@ const Players = () => {
   const [players, setPlayers] = useState<PlayerStorageDTO[]>([])
   const { params } = useRoute()
   const { group } = params as RouteParams
+
+  const newPlayerInputRef = useRef<TextInput>(null)
 
   const handleAddPlayer = async () => {
     if (newPlayer.trim().length === 0) {
@@ -48,6 +45,8 @@ const Players = () => {
     try {
       await AddPlayersByGroup(playerInTeam, group)
       fetchPlayerByTeam()
+      newPlayerInputRef.current?.blur()
+      Keyboard.dismiss()
       setNewPlayer('')
     } catch (error) {
       if (error instanceof AppError) {
@@ -81,6 +80,9 @@ const Players = () => {
           autoCorrect={false}
           onChangeText={setNewPlayer}
           value={newPlayer}
+          inputRef={newPlayerInputRef}
+          onSubmitEditing={handleAddPlayer}
+          returnKeyType={'done'}
         />
         <ButtonIcon icon="add" onPress={handleAddPlayer} />
       </Form>

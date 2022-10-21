@@ -12,7 +12,11 @@ import { PlayerCard } from '@components/Card/PlayerCard'
 import { ListEmpty } from '@components/ListEmpty'
 
 import { Container, Form, HeaderPlayerList, NumberOfPlayers } from './styles'
-import { AddPlayersByGroup, getPlayersByGroupAndTeam } from '@storage/players'
+import {
+  AddPlayersByGroup,
+  getPlayersByGroupAndTeam,
+  removePlayerByGroup,
+} from '@storage/players'
 import { AppError } from '@utils/AppError'
 import { PlayerStorageDTO } from '@storage/players/PlayerStorageDTO'
 
@@ -65,6 +69,11 @@ const Players = () => {
     } catch (error) {}
   }
 
+  const handleRemovePlayer = async (playerName: string) => {
+    await removePlayerByGroup(playerName, group)
+    fetchPlayerByTeam()
+  }
+
   useEffect(() => {
     fetchPlayerByTeam()
   }, [team])
@@ -107,7 +116,10 @@ const Players = () => {
         data={players}
         keyExtractor={(i) => i.name}
         renderItem={({ item }) => (
-          <PlayerCard name={item.name} onRemove={() => {}} />
+          <PlayerCard
+            name={item.name}
+            onRemove={() => handleRemovePlayer(item.name)}
+          />
         )}
         ListEmptyComponent={() => {
           return <ListEmpty message="Não há nenhum jogar" />

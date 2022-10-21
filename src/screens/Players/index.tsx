@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
 import { Alert, FlatList, TextInput, Keyboard } from 'react-native'
-import { useRoute } from '@react-navigation/native'
+import { useNavigation, useRoute } from '@react-navigation/native'
 
 import { Button } from '@components/Button'
 import { ButtonIcon } from '@components/ButtonIcon'
@@ -19,12 +19,14 @@ import {
 } from '@storage/players'
 import { AppError } from '@utils/AppError'
 import { PlayerStorageDTO } from '@storage/players/PlayerStorageDTO'
+import { removeGroupByName } from '@storage/group'
 
 type RouteParams = {
   group: string
 }
 
 const Players = () => {
+  const { navigate } = useNavigation()
   const [newPlayer, setNewPlayer] = useState('')
   const [team, setTeam] = useState('Team A')
   const [players, setPlayers] = useState<PlayerStorageDTO[]>([])
@@ -72,6 +74,24 @@ const Players = () => {
   const handleRemovePlayer = async (playerName: string) => {
     await removePlayerByGroup(playerName, group)
     fetchPlayerByTeam()
+  }
+
+  const removeGroup = async () => {
+    await removeGroupByName(group)
+    navigate('groups')
+  }
+
+  const handleRemoveGroup = async () => {
+    Alert.alert('Remover grupo', 'Deseja remover este grupo ?', [
+      {
+        text: 'Não',
+        style: 'cancel',
+      },
+      {
+        text: 'Sim',
+        onPress: () => removeGroup(),
+      },
+    ])
   }
 
   useEffect(() => {
@@ -130,7 +150,11 @@ const Players = () => {
         ]}
       />
 
-      <Button title="Remover turma" variant="SECONDARY" />
+      <Button
+        title="Remover turma"
+        variant="SECONDARY"
+        onPress={handleRemoveGroup}
+      />
     </Container>
   )
 }

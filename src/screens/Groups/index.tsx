@@ -10,9 +10,11 @@ import { Button } from '@components/Button'
 // End Components
 import { Container } from './styles'
 import { getAllGroups } from '@storage/group'
+import { Loading } from '@components/Loading'
 
 const Groups = () => {
   const { navigate } = useNavigation()
+  const [isLoading, setIsLoading] = useState(true)
   const [groups, setGroups] = useState<string[] | null>([])
 
   const handleAddNewGroup = () => {
@@ -20,8 +22,15 @@ const Groups = () => {
   }
 
   const getGroups = async () => {
-    const data = await getAllGroups()
-    setGroups(data)
+    try {
+      setIsLoading(true)
+      const data = await getAllGroups()
+      setGroups(data)
+    } catch (error) {
+      throw error
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const handleOpenPlayer = (group: string) => {
@@ -41,19 +50,23 @@ const Groups = () => {
       <Header />
       <Highlight title={'Turmas'} subTitle={'Jogue com sua turma'} />
 
-      <FlatList
-        data={groups}
-        keyExtractor={(item) => item}
-        renderItem={({ item }) => {
-          return (
-            <TeamCard title={item} onPress={() => handleOpenPlayer(item)} />
-          )
-        }}
-        contentContainerStyle={groups?.length === 0 && { flex: 1 }}
-        ListEmptyComponent={() => (
-          <ListEmpty message={'Nenhum team adicionado'} />
-        )}
-      />
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <FlatList
+          data={groups}
+          keyExtractor={(item) => item}
+          renderItem={({ item }) => {
+            return (
+              <TeamCard title={item} onPress={() => handleOpenPlayer(item)} />
+            )
+          }}
+          contentContainerStyle={groups?.length === 0 && { flex: 1 }}
+          ListEmptyComponent={() => (
+            <ListEmpty message={'Nenhum team adicionado'} />
+          )}
+        />
+      )}
 
       <Button title="Criar nova turma" onPress={handleAddNewGroup} />
     </Container>

@@ -20,6 +20,7 @@ import {
 import { AppError } from '@utils/AppError'
 import { PlayerStorageDTO } from '@storage/players/PlayerStorageDTO'
 import { removeGroupByName } from '@storage/group'
+import { Loading } from '@components/Loading'
 
 type RouteParams = {
   group: string
@@ -27,6 +28,7 @@ type RouteParams = {
 
 const Players = () => {
   const { navigate } = useNavigation()
+  const [isLoading, setIsLoading] = useState(true)
   const [newPlayer, setNewPlayer] = useState('')
   const [team, setTeam] = useState('Team A')
   const [players, setPlayers] = useState<PlayerStorageDTO[]>([])
@@ -66,9 +68,14 @@ const Players = () => {
 
   const fetchPlayerByTeam = async () => {
     try {
+      setIsLoading(true)
       const playersByTeam = await getPlayersByGroupAndTeam(group, team)
       setPlayers(playersByTeam)
-    } catch (error) {}
+    } catch (error) {
+      throw error
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const handleRemovePlayer = async (playerName: string) => {
@@ -132,23 +139,27 @@ const Players = () => {
         <NumberOfPlayers>{players.length}</NumberOfPlayers>
       </HeaderPlayerList>
 
-      <FlatList
-        data={players}
-        keyExtractor={(i) => i.name}
-        renderItem={({ item }) => (
-          <PlayerCard
-            name={item.name}
-            onRemove={() => handleRemovePlayer(item.name)}
-          />
-        )}
-        ListEmptyComponent={() => {
-          return <ListEmpty message="Não há nenhum jogar" />
-        }}
-        contentContainerStyle={[
-          { paddingBottom: 100 },
-          players.length === 0 && { flex: 1 },
-        ]}
-      />
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <FlatList
+          data={players}
+          keyExtractor={(i) => i.name}
+          renderItem={({ item }) => (
+            <PlayerCard
+              name={item.name}
+              onRemove={() => handleRemovePlayer(item.name)}
+            />
+          )}
+          ListEmptyComponent={() => {
+            return <ListEmpty message="Não há nenhum jogar" />
+          }}
+          contentContainerStyle={[
+            { paddingBottom: 100 },
+            players.length === 0 && { flex: 1 },
+          ]}
+        />
+      )}
 
       <Button
         title="Remover turma"
